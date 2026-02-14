@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Προσφορά Γνωριμίας</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Σταθερό φόντο και ύψος */
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        /* Animation για το "έντονο" κουμπί */
+        .offer-card {
+            transition: all 0.3s ease;
+        }
+        .offer-card:hover {
+            transform: scale(1.02);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        /* Pulse εφέ για scarcity */
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(250, 204, 21, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0); }
+        }
+        .urgent-pulse {
+            animation: pulse-border 2s infinite;
+        }
+    </style>
+</head>
+<body class="text-white font-sans antialiased">
+
+    <main class="flex-grow max-w-md mx-auto px-6 py-12 flex flex-col items-center w-full">
+        
+        <div class="mb-8 text-center">
+            <div class="relative w-24 h-24 mx-auto mb-4">
+                <img src="berry-coin.png" alt="Avatar" class="rounded-full border-4 border-yellow-500 shadow-lg object-cover">
+                <div class="absolute bottom-0 right-0 w-6 h-6 bg-green-500 border-2 border-slate-900 rounded-full"></div>
+            </div>
+            <h1 class="text-2xl font-bold tracking-tight">Bonus Γνωριμίας</h1>
+            <p class="text-slate-400 text-sm mt-2 leading-relaxed">
+                Δωρεάν Σπινς και Μπόνους κατάθεσης.
+            </p>
+        </div>
+
+        <div class="w-full mb-6 glass rounded-xl p-3 text-center border border-yellow-500/20">
+            <p class="text-[10px] uppercase tracking-widest text-yellow-500 font-bold mb-1">Λήξη προσφοράς σε:</p>
+            <div id="countdown" class="text-2xl font-mono font-bold tracking-tighter">00:00:00</div>
+        </div>
+
+        <div class="w-full space-y-4">
+            
+            <a href="https://1redlink.com/h3eee8699" class="offer-card glass flex items-center p-4 rounded-2xl border-l-4 border-yellow-400 urgent-pulse">
+                <div class="bg-yellow-400 p-3 rounded-xl mr-4 text-black font-bold text-xl">🔥</div>
+                <div class="flex-1">
+                    <h3 class="font-bold text-sm md:text-base">200% ΠΡΟΣΦΟΡΑ ΚΑΤΑΘΕΣΗΣ</h3>
+                    <p class="text-[12px] text-yellow-400 font-bold uppercase mt-1">Μόνο 12 θέσεις έμειναν</p>
+                </div>
+                <span class="text-[10px] font-semibold bg-white/10 px-2 py-1 rounded">CLAIM</span>
+            </a>
+
+            <button onclick="copyToClipboard()" id="copyBtn" class="w-full mt-6 py-3 px-4 glass rounded-full text-sm font-medium hover:bg-white/10 transition-colors">
+                Share
+            </button>
+        </div>
+    </main>
+
+    <footer class="w-full py-8 text-center text-slate-500 text-xs mt-auto">
+        <p>&copy; 2026 mphkabonus.com</p>
+    </footer>
+
+    <script>
+function startTimer() {
+        const timerKey = 'casino_offer_timer';
+        const defaultDuration = (2 * 3600) + (14 * 60) + 30; // 2h 14m 30s
+        let timeLeft;
+
+        // 1. Έλεγχος αν υπάρχει αποθηκευμένος χρόνος στο localStorage
+        const savedStartTime = localStorage.getItem(timerKey);
+        const now = Math.floor(Date.now() / 1000);
+
+        if (savedStartTime) {
+            const expirationTime = parseInt(savedStartTime);
+            timeLeft = expirationTime - now;
+
+            // 2. Αν ο χρόνος έχει λήξει ή είναι αρνητικός, κάνουμε reset
+            if (timeLeft <= 0) {
+                timeLeft = defaultDuration;
+                localStorage.setItem(timerKey, now + defaultDuration);
+            }
+        } else {
+            // 3. Πρώτη φορά που μπαίνει ο χρήστης
+            timeLeft = defaultDuration;
+            localStorage.setItem(timerKey, now + defaultDuration);
+        }
+
+        const display = document.querySelector('#countdown');
+        
+        const interval = setInterval(function () {
+            const currentNow = Math.floor(Date.now() / 1000);
+            const remaining = parseInt(localStorage.getItem(timerKey)) - currentNow;
+
+            if (remaining <= 0) {
+                // Reset όταν φτάσει στο μηδέν
+                const newExpiration = currentNow + defaultDuration;
+                localStorage.setItem(timerKey, newExpiration);
+            }
+
+            let hours = Math.floor(remaining / 3600);
+            let minutes = Math.floor((remaining % 3600) / 60);
+            let seconds = Math.floor(remaining % 60);
+
+            // Formatting για να φαίνονται πάντα 2 ψηφία (π.χ. 01:05:09)
+            hours = hours < 10 ? "0" + hours : hours;
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+
+            display.textContent = hours + ":" + minutes + ":" + seconds;
+        }, 1000);
+    }
+
+    // Εκκίνηση του timer και του share button
+    window.onload = function () {
+        startTimer();
+    };
+
+    function copyToClipboard() {
+        const url = "https://mphkabonus.com";
+        navigator.clipboard.writeText(url).then(() => {
+            const btn = document.getElementById('copyBtn');
+            btn.innerText = 'Link Copied! ✅';
+            setTimeout(() => {
+                btn.innerText = 'Share';
+            }, 2000);
+        });
+    }
+    </script>
+</body>
+</html>
